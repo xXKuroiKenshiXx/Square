@@ -23,3 +23,5 @@ Branch: feat/orange-wheel-1.2. Delivery: single release. Checks: version consist
 - T1 checks: UI regression first failed on stale v0.2; metadata/build and complete UI smoke test then passed at 1.0.0. Baseline normalization complete; rollback is the version metadata/UI import and its tests.
 
 - T2: the palette regression failed on the white wheel, then passed after the orange-glass change. Conversion, keyboard dismissal, settings, pagination and single-format input remain covered. Captures visually inspected. UI version is read directly from package metadata.
+
+- Independent verification at a345bbc passed S1, S2 and S4; S3 remains pending native packages. Scratch: square-verify-BxqsBv in system temp. Native conversion backend unchanged. Engine provenance helper verified against real FFmpeg/Pandoc binaries; manifests travel with CI artifacts.

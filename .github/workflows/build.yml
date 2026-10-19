@@ -43,6 +43,8 @@ jobs:
         if: runner.os == 'Linux'
         run: bash scripts/prepare-engines.sh
       - run: npm ci
+      - name: Record embedded engine provenance
+        run: node scripts/engine-manifest.mjs
       - name: Verify frontend
         run: npm run build
       - name: Verify backend
@@ -62,11 +64,14 @@ jobs:
           path: |
             src-tauri/target/release/square.exe
             src-tauri/target/release/bundle/nsis/*.exe
+            release/engine-manifest-*.json
       - uses: actions/upload-artifact@v4
         if: runner.os == 'Linux'
         with:
           name: Square-Linux-AppImage
-          path: src-tauri/target/release/bundle/appimage/*.AppImage
+          path: |
+            src-tauri/target/release/bundle/appimage/*.AppImage
+            release/engine-manifest-*.json
   interface:
     runs-on: ubuntu-22.04
     timeout-minutes: 15
