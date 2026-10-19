@@ -14,3 +14,6 @@ Plataformas: Windows x64 y Linux x64 mediante AppImage. Proyecto local en el Esc
 
 ## Límites de entrega
 AppImage se genera en Ubuntu con WebKitGTK 4.1; no se presenta un ejecutable Windows como artefacto Linux. El repositorio remoto requiere credenciales GitHub válidas.
+
+## Versión 0.2 — rueda rápida
+Shift + Espacio abre una rueda junto al cursor. En Windows lee un único archivo seleccionado en Explorer o Escritorio; en Linux usa el archivo cargado. El usuario puede cambiar o desactivar el atajo en Configuración. Solo se ofrecen formatos convertibles y el resultado conserva la carpeta original. Escape y pérdida de foco cierran la rueda. El nombre del archivo permanece oculto en la vista principal.

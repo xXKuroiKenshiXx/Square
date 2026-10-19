@@ -1,19 +1,24 @@
 [package]
 name = "square"
-version = "0.1.0"
+version = "0.2.0"
 description = "Conversor local de archivos"
 edition = "2021"
 license = "GPL-3.0-or-later"
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["tray-icon"] }
 tauri-plugin-dialog = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-single-instance = "2"
+serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 image = "0.25"
 pdf-extract = "0.10"
 tempfile = "3"
 resvg = "0.45"
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging", "Win32_UI_Shell", "Win32_System_Com", "Win32_System_Variant", "Win32_System_Ole"] }
 [profile.release]
 lto = true
 codegen-units = 1

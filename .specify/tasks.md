@@ -23,3 +23,11 @@
 - [x] Copiar portable terminado al Escritorio.
 - [x] Compilar AppImage local en Ubuntu 24.04 y verificar arranque durante 20 segundos.
 - [x] Publicar repositorio privado en GitHub.
+
+## Versión 0.2 — rueda rápida
+- [x] Rueda radial con formatos compatibles, paginación y estados.
+- [x] Shift + Espacio configurable y preferencias persistentes.
+- [x] Selección nativa de un archivo en Explorer, bandeja e instancia única.
+- [x] En Linux: reutilizar el archivo cargado en Square.
+- [x] Ocho pruebas Rust en Windows, siete en Linux y pruebas de interfaz.
+- [x] Video promocional y documentación de sus conversiones reales.

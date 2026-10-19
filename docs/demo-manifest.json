@@ -1,0 +1,19 @@
+{
+  "description": "React interface recorded in Chromium. Fixture file dialogs; conversions use the real Rust convert_sync implementation. Timing is illustrative, not a benchmark.",
+  "conversions": [
+    {
+      "source": "studio.svg",
+      "target": "webp",
+      "output": "studio-square.webp",
+      "bytes": 9246,
+      "sha256": "cf0b54e738aef2f7b100c50212be034338bc11445d530c52ac97667cf06064b8"
+    },
+    {
+      "source": "studio.svg",
+      "target": "png",
+      "output": "studio-square.png",
+      "bytes": 19112,
+      "sha256": "6523d4b386bd063297769a4b75009468aa5f0b1f90aeb0b3dc57a5449e242259"
+    }
+  ]
+}

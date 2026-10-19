@@ -1,0 +1,30 @@
+{
+  "square": "0.2.0",
+  "scope": "Motors embedded in the locally verified v0.2.0 release; not a declaration about arbitrary CI or user builds.",
+  "windows-x64": {
+    "ffmpeg": {
+      "version": "N-125875-g5d4d3bdc61-20260731",
+      "sha256": "851aa8ea5366b5af33c0681cc292d662829c7088e9ac96f6e9b37030e6835ba4",
+      "source": "5d4d3bdc61412641883a45e060e810f80ea7f4b5",
+      "archive": "ffmpeg-windows-5d4d3bdc61-source.tar.gz"
+    },
+    "pandoc": {
+      "version": "3.12.1",
+      "sha256": "eb392d2661d35abc597a6288a548cc82f6291b179da28b24bc5a5d06c742d35d",
+      "archive": "pandoc-3.12.1-source.tar.gz"
+    }
+  },
+  "linux-x64": {
+    "ffmpeg": {
+      "version": "N-127654-g7045cc9b80-20261018",
+      "sha256": "6e9c65f7a514c51289fadfd4987d75c1ba79d3aaa4b9c714b9f81080960a2348",
+      "source": "7045cc9b8020ebaae156f4947baa752625056f90",
+      "archive": "ffmpeg-linux-7045cc9b80-source.tar.gz"
+    },
+    "pandoc": {
+      "version": "3.12.1",
+      "sha256": "10a980df73e7fea52904375d4de731c4ed61fd1c45fa0900facd2a5972ff0ee1",
+      "archive": "pandoc-3.12.1-source.tar.gz"
+    }
+  }
+}

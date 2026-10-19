@@ -1,5 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use serde::Serialize;
+mod quick;
+mod selection;
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -38,7 +40,7 @@ fn targets(ext: &str) -> Vec<String> {
         .map(str::to_owned)
         .collect()
 }
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 struct Info {
     path: String,
     name: String,
@@ -59,8 +61,7 @@ fn extension(p: &Path) -> String {
         .to_string_lossy()
         .to_lowercase()
 }
-#[tauri::command]
-fn inspect(path: String) -> Result<Info, String> {
+fn inspect_file(path: String) -> Result<Info, String> {
     let p = source(&path)?;
     let ext = extension(&p);
     Ok(Info {
@@ -70,6 +71,12 @@ fn inspect(path: String) -> Result<Info, String> {
         targets: targets(&ext),
         ext,
     })
+}
+#[tauri::command]
+fn inspect(app: tauri::AppHandle, path: String) -> Result<Info, String> {
+    let info = inspect_file(path)?;
+    quick::remember(&app, &info);
+    Ok(info)
 }
 fn engine(name: &str) -> Result<PathBuf, String> {
     let bytes: &[u8] = match name {
@@ -142,7 +149,7 @@ fn run(name: &str, args: &[String]) -> Result<(), String> {
         ))
     }
 }
-fn convert_sync(path: String, target: String) -> Result<String, String> {
+pub(crate) fn convert_sync(path: String, target: String) -> Result<String, String> {
     let p = source(&path)?;
     let ext = extension(&p);
     if !targets(&ext).contains(&target) {
@@ -319,15 +326,64 @@ fn convert_sync(path: String, target: String) -> Result<String, String> {
     Err("Demasiados archivos con el mismo nombre.".into())
 }
 #[tauri::command]
-async fn convert(path: String, target: String) -> Result<String, String> {
+async fn convert(app: tauri::AppHandle, path: String, target: String) -> Result<String, String> {
+    use tauri::Manager;
+    let state = app.state::<quick::QuickState>();
+    if state
+        .converting
+        .swap(true, std::sync::atomic::Ordering::SeqCst)
+    {
+        return Err("Hay una conversión en curso. Esperá a que termine.".into());
+    }
+    struct Reset(tauri::AppHandle);
+    impl Drop for Reset {
+        fn drop(&mut self) {
+            use tauri::Manager;
+            self.0
+                .state::<quick::QuickState>()
+                .converting
+                .store(false, std::sync::atomic::Ordering::SeqCst);
+        }
+    }
+    let _reset = Reset(app);
     tauri::async_runtime::spawn_blocking(move || convert_sync(path, target))
         .await
         .map_err(|e| e.to_string())?
 }
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, args, _| {
+            if let Some(path) = args
+                .iter()
+                .skip(1)
+                .find(|path| std::path::Path::new(path).is_file())
+            {
+                let _ = quick::open_path(app, path.clone());
+            } else {
+                quick::show_main(app);
+            }
+        }))
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![inspect, convert])
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(|app, _, event| {
+                    if event.state == tauri_plugin_global_shortcut::ShortcutState::Pressed {
+                        quick::activate(app);
+                    }
+                })
+                .build(),
+        )
+        .setup(quick::setup)
+        .on_window_event(quick::window_event)
+        .invoke_handler(tauri::generate_handler![
+            inspect,
+            convert,
+            quick::get_settings,
+            quick::save_settings,
+            quick::wheel_context,
+            quick::open_wheel,
+            quick::dismiss_wheel
+        ])
         .run(tauri::generate_context!())
         .expect("No se pudo iniciar Square");
 }

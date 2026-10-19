@@ -13,6 +13,13 @@ try {
   await page.addInitScript(() => {
     window.testCalls = [];
     window.cancelNext = false;
+    window.demoSettings = {
+      shortcut: "Shift+Space",
+      enabled: true,
+      registered: true,
+      error: null,
+      platform: "windows",
+    };
     window.__TAURI_EVENT_PLUGIN_INTERNALS__ = { unregisterListener() {} };
     window.__TAURI_INTERNALS__ = {
       metadata: {
@@ -23,6 +30,47 @@ try {
       unregisterCallback() {},
       invoke: async (command, args) => {
         window.testCalls.push({ command, args });
+        if (command === "get_settings") return window.demoSettings;
+        if (command === "save_settings") {
+          window.demoSettings = {
+            ...window.demoSettings,
+            ...args.settings,
+            registered: args.settings.enabled,
+          };
+          return window.demoSettings;
+        }
+        if (command === "wheel_context")
+          return {
+            path: "C:\\fixtures\\sample.svg",
+            name: "nombre-privado-del-archivo.svg",
+            ext: "svg",
+            bytes: 1024,
+            targets:
+              new URLSearchParams(location.search).get("demo") === "video"
+                ? [
+                    "mkv",
+                    "mov",
+                    "webm",
+                    "avi",
+                    "mpeg",
+                    "m4v",
+                    "wmv",
+                    "ts",
+                    "flv",
+                    "mp3",
+                    "wav",
+                    "aac",
+                    "flac",
+                    "ogg",
+                    "wma",
+                    "m4a",
+                    "opus",
+                    "aiff",
+                  ]
+                : new URLSearchParams(location.search).get("demo") === "single"
+                  ? ["txt"]
+                  : ["png", "jpg", "webp", "bmp", "tiff", "gif", "ico"],
+          };
         if (command === "plugin:dialog|open") {
           if (window.cancelNext) {
             window.cancelNext = false;
@@ -97,9 +145,112 @@ try {
   await page.screenshot({ path: "release/ui-output-menu.png" });
   const panel = await page.locator("#output-formats").boundingBox();
   expect(panel.y + panel.height).toBeLessThanOrEqual(640);
+  await page.keyboard.press("Escape");
+  await page
+    .getByRole("button", { name: "Configuración", exact: true })
+    .click();
+  const settingsDialog = page.getByRole("dialog", {
+    name: "Configuración",
+    exact: true,
+  });
+  await expect(settingsDialog).toBeVisible();
+  await expect(page.locator("#shortcut-record")).toContainText(
+    "Shift + Espacio",
+  );
+  await page.locator("#shortcut-record").click();
+  await page.keyboard.press("Control+Shift+k");
+  await expect(page.locator("#shortcut-record")).toContainText(
+    "Ctrl + Shift + K",
+  );
+  await page.screenshot({ path: "release/ui-settings.png" });
+  const settingsBounds = await settingsDialog.boundingBox();
+  expect(settingsBounds.y).toBeGreaterThanOrEqual(0);
+  expect(settingsBounds.y + settingsBounds.height).toBeLessThanOrEqual(640);
+  await page.getByRole("button", { name: /Guardar configuración/ }).click();
+  await expect(settingsDialog).toHaveCount(0);
+  expect(await page.evaluate(() => window.demoSettings.shortcut)).toBe(
+    "Ctrl+Shift+K",
+  );
+  await page
+    .getByRole("button", { name: "Configuración", exact: true })
+    .click();
+  await expect(page.locator("#shortcut-record")).toContainText(
+    "Ctrl + Shift + K",
+  );
+  await page.keyboard.press("Escape");
+  await page
+    .getByRole("button", { name: "Abrir rueda de formatos", exact: true })
+    .click();
+  expect(
+    await page.evaluate(() =>
+      window.testCalls.some((call) => call.command === "open_wheel"),
+    ),
+  ).toBe(true);
+  await page.setViewportSize({ width: 420, height: 420 });
+  await page.goto(
+    (process.env.SQUARE_URL || "http://127.0.0.1:1420") + "/?view=wheel",
+  );
+  await expect(page.getByRole("button", { name: /Convertir a/ })).toHaveCount(
+    7,
+  );
+  await page
+    .getByRole("button", { name: "Convertir a WEBP", exact: true })
+    .hover();
+  await page.screenshot({ path: "release/ui-wheel.png" });
+  await expect(page.getByText(/nombre-privado-del-archivo/)).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Convertir a WEBP", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText(
+    "Listo. Junto al original.",
+  );
+  expect(
+    await page.evaluate(
+      () =>
+        window.testCalls.find((call) => call.command === "convert").args.target,
+    ),
+  ).toBe("webp");
+  await page.keyboard.press("Escape");
+  expect(
+    await page.evaluate(() =>
+      window.testCalls.some((call) => call.command === "dismiss_wheel"),
+    ),
+  ).toBe(true);
+  await page.goto(
+    (process.env.SQUARE_URL || "http://127.0.0.1:1420") +
+      "/?view=wheel&demo=video",
+  );
+  await expect(page.getByRole("button", { name: /Convertir a/ })).toHaveCount(
+    8,
+  );
+  await page.getByRole("button", { name: "Más formatos", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Convertir a MP3", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Más formatos", exact: true }).click();
+  await expect(page.getByRole("button", { name: /Convertir a/ })).toHaveCount(
+    2,
+  );
+  await page.goto(
+    (process.env.SQUARE_URL || "http://127.0.0.1:1420") +
+      "/?view=wheel&demo=single",
+  );
+  await expect(page.getByRole("button", { name: /Convertir a/ })).toHaveCount(
+    1,
+  );
+  await page.locator(".wheel-segment text").click();
+  await expect(page.getByRole("status")).toContainText(
+    "Listo. Junto al original.",
+  );
+  expect(
+    await page.evaluate(
+      () =>
+        window.testCalls.find((call) => call.command === "convert").args.target,
+    ),
+  ).toBe("txt");
   expect(errors).toEqual([]);
   console.log(
-    "PASS: filtered input menu, output menu, hidden filename, cancellation, Escape, outside click and conversion state.",
+    "PASS: input/output menus, hidden filename, settings and shortcut capture, wheel conversion, Escape and format pagination.",
   );
 } finally {
   await browser.close();

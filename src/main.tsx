@@ -3,6 +3,10 @@ import { createRoot } from "react-dom/client";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
+import { listen } from "@tauri-apps/api/event";
+import Settings, { shortcutLabel } from "./Settings";
+import Wheel from "./Wheel";
+import type { QuickSettings } from "./types";
 import "./style.css";
 
 type Info = {
@@ -99,10 +103,50 @@ function App() {
   const [drag, setDrag] = useState(false);
   const [status, setStatus] = useState("");
   const [done, setDone] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [shortcut, setShortcut] = useState("Shift+Space");
+  const settingsButton = useRef<HTMLButtonElement>(null);
   const busyRef = useRef(false);
   const converterRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLButtonElement>(null);
   const outputRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!("__TAURI_INTERNALS__" in window)) return;
+    let active = true;
+    const disposers: (() => void)[] = [];
+    invoke<QuickSettings>("get_settings")
+      .then((s) => {
+        if (active && typeof s?.shortcut === "string") {
+          setShortcut(s.shortcut);
+          if (s.error) setStatus(s.error);
+        }
+      })
+      .catch(() => {});
+    for (const pending of [
+      listen("square-settings", () => {
+        if (active) setSettingsOpen(true);
+      }),
+      listen<string>("square-notice", (event) => {
+        if (active) setStatus(event.payload);
+      }),
+    ])
+      pending.then((dispose) => {
+        if (active) disposers.push(dispose);
+        else dispose();
+      });
+    return () => {
+      active = false;
+      disposers.forEach((dispose) => dispose());
+    };
+  }, []);
+  async function showWheel() {
+    if (!file || busy) return;
+    try {
+      await invoke("open_wheel", { path: file.path });
+    } catch {
+      setStatus("No se pudo abrir la rueda para este archivo.");
+    }
+  }
 
   async function load(path: string) {
     if (busyRef.current) return;
@@ -223,6 +267,19 @@ function App() {
           square<span>LOCAL CONVERTER</span>
         </div>
         <div className="controls">
+          <button
+            ref={settingsButton}
+            aria-label="Configuración"
+            onClick={() => {
+              setMenu(null);
+              setSettingsOpen(true);
+            }}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 4 1-2h4l1 2 3 2 2 1v4l-2 1v3l-2 2-2-1-3 1-2 2H6l-1-3-2-2 1-3-1-3 3-1Z" />
+              <circle cx="11" cy="10" r="3" />
+            </svg>
+          </button>
           <button
             aria-label="Minimizar"
             onClick={() => void getCurrentWindow().minimize()}
@@ -361,6 +418,13 @@ function App() {
               >
                 Cambiar <span>↗</span>
               </button>
+              <button
+                disabled={busy || !file.targets.length}
+                onClick={() => void showWheel()}
+                aria-label="Abrir rueda de formatos"
+              >
+                Rueda <span>◌</span>
+              </button>
             </>
           ) : (
             <button className="choose-inline" onClick={() => void choose()}>
@@ -389,15 +453,45 @@ function App() {
           <i />
           100% LOCAL
         </span>
-        <span>Tus archivos se quedan con vos.</span>
-        <span>v0.1</span>
+        <button
+          className="footer-shortcut"
+          onClick={() => {
+            if (file) void showWheel();
+            else setSettingsOpen(true);
+          }}
+        >
+          {shortcutLabel(shortcut)} · Rueda rápida
+        </button>
+        <span>v0.2</span>
       </footer>
       {drag && (
         <div className="drop-overlay">
           ＋<span>Soltalo acá.</span>
         </div>
       )}
+      {settingsOpen && (
+        <Settings
+          onClose={() => {
+            setSettingsOpen(false);
+            settingsButton.current?.focus();
+          }}
+          onSaved={(settings) => {
+            setShortcut(settings.shortcut);
+            setStatus(
+              settings.enabled
+                ? `Rueda rápida: ${shortcutLabel(settings.shortcut)}`
+                : "Atajo global desactivado.",
+            );
+          }}
+        />
+      )}
     </main>
   );
 }
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  new URLSearchParams(window.location.search).get("view") === "wheel" ? (
+    <Wheel />
+  ) : (
+    <App />
+  ),
+);

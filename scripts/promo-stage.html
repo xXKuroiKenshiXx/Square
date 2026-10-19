@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="es">
+  <meta charset="utf-8" /><title>Square · Un archivo. Otra posibilidad.</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: #121412;
+      color: #f7ebde;
+      font-family: "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    .stage {
+      position: relative;
+      width: 1600px;
+      height: 900px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 78% 35%, #85614045, transparent 49%),
+        radial-gradient(ellipse at 10% 95%, #5b47332b, transparent 45%), #171917;
+    }
+    .grain {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, #fff2ce04, transparent 40%);
+      pointer-events: none;
+    }
+    .top {
+      position: absolute;
+      top: 53px;
+      left: 76px;
+      right: 76px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      font-size: 30px;
+      font-weight: 650;
+      letter-spacing: -1px;
+    }
+    .mark {
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      border-radius: 7px;
+      background: linear-gradient(130deg, #ffdfbc, #eeb68b);
+      border: 1px solid #ffecd29c;
+      box-shadow:
+        inset 0 1px 2px #fff8,
+        0 0 25px #e6ad6b15;
+    }
+    .version {
+      border: 1px solid #e9c49c38;
+      color: #d1b798;
+      font-size: 12px;
+      letter-spacing: 2px;
+      padding: 10px 17px;
+      border-radius: 30px;
+    }
+    .copy {
+      position: absolute;
+      left: 76px;
+      top: 237px;
+      width: 690px;
+      transition:
+        opacity 0.35s,
+        transform 0.45s;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: #c0a789;
+      margin-bottom: 24px;
+    }
+    .copy h1 {
+      font-size: 76px;
+      line-height: 1.02;
+      font-weight: 400;
+      letter-spacing: -4px;
+      margin: 0 0 31px;
+    }
+    .copy h1 em {
+      font-style: normal;
+      color: #f0c49c;
+    }
+    .copy p {
+      font-size: 21px;
+      color: #b5b6a7;
+      line-height: 1.65;
+      white-space: pre-line;
+      max-width: 570px;
+      margin: 0;
+    }
+    .chips {
+      display: flex;
+      gap: 8px;
+      margin-top: 31px;
+    }
+    .chips span {
+      border: 1px solid #dcb68c25;
+      background: #fff4da04;
+      border-radius: 9px;
+      padding: 9px 13px;
+      font-size: 12px;
+      color: #d8c3aa;
+    }
+    .device {
+      position: absolute;
+      left: 866px;
+      top: 130px;
+      width: 640px;
+      height: 640px;
+      border-radius: 28px;
+      box-shadow: 0 30px 90px #0005;
+      transition:
+        opacity 0.6s,
+        transform 0.6s;
+    }
+    .device iframe {
+      border: 0;
+      width: 640px;
+      height: 640px;
+      border-radius: 26px;
+      background: transparent;
+    }
+    .wheel-device {
+      position: absolute;
+      left: 967px;
+      top: 240px;
+      width: 440px;
+      height: 440px;
+      opacity: 0;
+      transform: scale(0.92);
+      pointer-events: none;
+      transition:
+        opacity 0.4s,
+        transform 0.4s;
+    }
+    .wheel-device iframe {
+      border: 0;
+      background: transparent;
+      width: 420px;
+      height: 420px;
+    }
+    .file-stage {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: #8c988e;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .file-card {
+      position: absolute;
+      left: 1040px;
+      top: 172px;
+      border: 1px solid #ffe6c146;
+      border-radius: 17px;
+      padding: 18px 30px;
+      background: #e7c49b0e;
+      color: #e4d2b9;
+      font-size: 15px;
+    }
+    .wheel-on .device {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    .wheel-on .wheel-device {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+    .wheel-on .file-stage {
+      opacity: 1;
+    }
+    .keyboard {
+      display: inline-flex;
+      gap: 9px;
+      align-items: center;
+      margin-top: 28px;
+      color: #dbc4a6;
+      font-size: 19px;
+    }
+    .keyboard kbd {
+      font-family: inherit;
+      font-size: 18px;
+      padding: 9px 15px;
+      border: 1px solid #d6b48743;
+      border-radius: 10px;
+      background: linear-gradient(#fff5df0f, #fff5df04);
+      box-shadow: 0 3px 0 #c6a57d1c;
+    }
+    .bottom {
+      position: absolute;
+      bottom: 49px;
+      left: 76px;
+      right: 76px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #8c9689;
+      letter-spacing: 0.5px;
+    }
+    .bottom .note {
+      font-size: 10px;
+      color: #929384;
+    }
+    .cursor {
+      position: absolute;
+      width: 20px;
+      height: 27px;
+      pointer-events: none;
+      z-index: 50;
+      left: 1550px;
+      top: 850px;
+      transition:
+        left 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+        top 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+        opacity 0.3s;
+      filter: drop-shadow(0 2px 3px #0005);
+    }
+    .cursor svg {
+      width: 100%;
+      height: 100%;
+    }
+    .cursor::after {
+      content: "";
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      left: -11px;
+      top: -8px;
+      border: 2px solid #ffcf9b;
+      border-radius: 50%;
+      opacity: 0;
+    }
+    .cursor.pulse::after {
+      animation: click 0.5s ease-out;
+    }
+    @keyframes click {
+      from {
+        transform: scale(0.3);
+        opacity: 1;
+      }
+      to {
+        transform: scale(1.4);
+        opacity: 0;
+      }
+    }
+    .outro .device,
+    .outro .wheel-device,
+    .outro .file-stage,
+    .outro .cursor {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .outro .copy {
+      width: 1448px;
+      top: 245px;
+      text-align: center;
+    }
+    .outro .copy h1 {
+      font-size: 90px;
+      letter-spacing: -4px;
+    }
+    .outro .copy p {
+      max-width: none;
+    }
+    .outro .chips {
+      justify-content: center;
+    }
+    .outro .eyebrow {
+      color: #e3bd94;
+    }
+    .outro .keyboard {
+      display: none;
+    }
+  </style>
+  <body>
+    <main class="stage" id="stage">
+      <div class="grain"></div>
+      <header class="top">
+        <div class="brand"><i class="mark"></i>square</div>
+        <div class="version">v0.2 · LOCAL BY DESIGN</div>
+      </header>
+      <section class="copy">
+        <div id="eyebrow" class="eyebrow">UN ESPACIO PARA CONVERTIR</div>
+        <h1 id="title">Un archivo.<br /><em>Otra posibilidad.</em></h1>
+        <p id="description">
+          Imágenes, audio, video y documentos.<br />En tu dispositivo. A tu
+          ritmo.
+        </p>
+        <div class="chips" id="chips">
+          <span>Sin cuentas</span><span>Sin subir archivos</span
+          ><span>Windows + Linux</span>
+        </div>
+        <div class="keyboard" id="keyboard" style="display: none">
+          <kbd>Shift</kbd> + <kbd>Espacio</kbd>
+        </div>
+      </section>
+      <div class="device">
+        <iframe id="app" src="/app/" title="Square"></iframe>
+      </div>
+      <div class="file-stage">
+        <div class="file-card">▤ &nbsp; studio.svg &nbsp; ✓</div>
+      </div>
+      <div class="wheel-device">
+        <iframe
+          id="wheel"
+          src="/app/?view=wheel"
+          title="Rueda de Square"
+        ></iframe>
+      </div>
+      <footer class="bottom">
+        <span id="footer">SIMPLE POR NATURALEZA.</span
+        ><span class="note"
+          >Demo de interfaz · archivos de muestra · conversiones locales
+          reales</span
+        ><span>github.com/xXKuroiKenshiXx/Square</span>
+      </footer>
+      <div class="cursor" id="cursor">
+        <svg viewBox="0 0 20 27">
+          <path
+            d="M2 1v22l5-6 4 9 4-2-4-8h8Z"
+            fill="#fff6e7"
+            stroke="#342c22"
+            stroke-width="1.2"
+          />
+        </svg>
+      </div>
+    </main>
+    <script>
+      const stage = document.getElementById("stage"),
+        cursor = document.getElementById("cursor");
+      window.movePointer = (x, y) => {
+        cursor.style.left = x + "px";
+        cursor.style.top = y + "px";
+      };
+      window.pulsePointer = () => {
+        cursor.classList.remove("pulse");
+        void cursor.offsetWidth;
+        cursor.classList.add("pulse");
+      };
+      window.setScene = (id) => {
+        const scenes = [
+          [
+            "UN ESPACIO PARA CONVERTIR",
+            "Un archivo.<br><em>Otra posibilidad.</em>",
+            "Imágenes, audio, video y documentos.\nEn tu dispositivo. A tu ritmo.",
+          ],
+          [
+            "01 / ELEGÍ Y CONVERTÍ",
+            "Menos pasos.<br><em>Más posibilidades.</em>",
+            "El formato que necesitás.\nEl original, siempre intacto.",
+          ],
+          [
+            "02 / AHORA, UNA RUEDA",
+            "Tu archivo.<br><em>Tu próximo formato.</em>",
+            "Elegí un destino junto al cursor.\nSin cambiar de ventana.",
+          ],
+          [
+            "03 / A TU MANERA",
+            "Un atajo.<br><em>Tu propio ritmo.</em>",
+            "La combinación que te resulte natural.\nConfigurable desde Square.",
+          ],
+          [
+            "DISPONIBLE EN GITHUB",
+            "Convertí.<br><em>Seguí con lo tuyo.</em>",
+            "Square 0.2 · Conversión local para Windows y Linux.",
+          ],
+        ];
+        const scene = scenes[id];
+        document.getElementById("eyebrow").innerHTML = scene[0];
+        document.getElementById("title").innerHTML = scene[1];
+        document.getElementById("description").innerText = scene[2];
+        stage.classList.toggle("wheel-on", id === 2);
+        stage.classList.toggle("outro", id === 4);
+        document.getElementById("keyboard").style.display =
+          id === 2 ? "inline-flex" : "none";
+        document.getElementById("chips").innerHTML =
+          id === 4
+            ? "<span>Windows portable</span><span>Instalador Windows</span><span>Linux AppImage</span>"
+            : "<span>Sin cuentas</span><span>Sin subir archivos</span><span>100% local</span>";
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+name: Proponer una mejora
+description: Un formato, una interacción o una mejora de Square.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qué necesitás resolver
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Cómo te gustaría que funcione
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Plataforma o formatos involucrados

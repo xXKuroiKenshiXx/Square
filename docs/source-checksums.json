@@ -1,0 +1,22 @@
+[
+  {
+    "name": "ffmpeg-build-recipes-linux.tar.gz",
+    "Hash": "9E03FA120553F409843946589B73AEE1D3851B63C87967EE14390F41923E2E22"
+  },
+  {
+    "name": "ffmpeg-build-recipes-windows.tar.gz",
+    "Hash": "7DEAC4A5190B2BE84D4D548DB2885D05152F9E3D77069D0E34841A46EFD95E2B"
+  },
+  {
+    "name": "ffmpeg-linux-7045cc9b80-source.tar.gz",
+    "Hash": "C695FCB1A98DF23C51856719991E4F1A5496224C16070171C7FC6C6B03FDA9A3"
+  },
+  {
+    "name": "ffmpeg-windows-5d4d3bdc61-source.tar.gz",
+    "Hash": "A313D2046BDDF6FE58AF221EE45E4ACF2DAAF63852B740DBCC9B8A6F91AF09B7"
+  },
+  {
+    "name": "pandoc-3.12.1-source.tar.gz",
+    "Hash": "CF9B3725B90E471AA70C99AC3B351ADCB6E40CD904D36FCBB0F70D712E135686"
+  }
+]

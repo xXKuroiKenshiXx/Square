@@ -8,4 +8,8 @@
 - pdf-extract: MIT, https://github.com/jrmuizel/pdf-extract .
 - resvg: MPL-2.0, https://github.com/linebender/resvg .
 
-Los motores descargados no se incluyen en Git. La compilación usa las versiones presentes al preparar engines; para releases auditables registrar hashes/versiones y archivar las fuentes correspondientes antes de publicación pública.
+Los motores compilados no se incluyen en Git. La release 0.2.0 adjunta las fuentes exactas y recetas de los motores; revisiones y enlaces en [docs/ENGINE-SOURCES.md](docs/ENGINE-SOURCES.md). Sus hashes se registran junto a cada descarga.
+
+- tauri-plugin-global-shortcut y tauri-plugin-single-instance: MIT/Apache-2.0, https://github.com/tauri-apps/plugins-workspace .
+- windows-rs: MIT/Apache-2.0, https://github.com/microsoft/windows-rs .
+- Los recursos gráficos y la música sintetizada de la demo fueron creados para Square. El video muestra las vistas de React; el adaptador ejecuta conversiones locales con el mismo motor Rust. Véase [docs/MEDIA.md](docs/MEDIA.md).

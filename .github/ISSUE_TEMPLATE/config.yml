@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Seguridad
+    url: https://github.com/xXKuroiKenshiXx/Square/blob/main/SECURITY.md
+    about: Leé cómo informar un problema sensible sin publicar datos privados.

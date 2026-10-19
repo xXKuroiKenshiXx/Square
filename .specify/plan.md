@@ -7,3 +7,5 @@ Rust usa image para raster, pdf-extract para PDF textual, FFmpeg para medios y P
 Distribuir Square.exe + NSIS en Windows; AppImage en Ubuntu 22.04. CI prepara motores por plataforma y guarda artefactos. No usar updater ni telemetría. Versiones resueltas por package-lock.json y Cargo.lock. Los binarios de motores no se versionan en Git; script de preparación los obtiene o copia.
 
 Validación: TypeScript/Vite, pruebas Rust del mapa y colisiones, conversiones reales imagen/audio/documento, lanzamiento del portable y compilación NSIS. La validación AppImage corresponde al job Linux.
+
+Versión 0.2: ventana radial transparente independiente, estado compartido y exclusión mutua de conversiones. Atajo global configurable y preferencias atómicas; Shell/COM lee la selección activa en Windows. Bandeja e instancia única mantienen accesible la aplicación. Linux reutiliza el último archivo cargado.
