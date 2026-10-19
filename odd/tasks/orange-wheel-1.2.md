@@ -9,8 +9,8 @@ Branch: feat/orange-wheel-1.2. Delivery: single release. Checks: version consist
 - S4: "modificale la rueda y rapida esa que ayuuda a configurar rapido de color naranja y no blanca osea que tenga la misma estetica del programa" — replace the wheel's white surfaces with the application's warm orange/dark glass palette, preserving conversion, keyboard access and pagination.
 
 ## Tasks
-- T1 [S1,S2] inline — complete: restored, all version metadata and visible UI at 1.0.0; source tag ready. Risk: item 5 (release metadata).
-- T2 [S4] inline — wheel palette and focused UI regression pending. Risk: none (visual styling).
+- T1 [S1,S2] inline — complete: restored, all version metadata and visible UI at 1.0.0; source tag v1.0.0 at 3600787. Risk: item 5 (release metadata).
+- T2 [S4] inline — complete: orange/dark glass wheel; build and complete UI regression passed. Risk: none (visual styling).
 - T3 [S3] inline + independent verifier — 1.2.0 packages, release links and Desktop portable pending. Risk: item 5 (release).
 
 ## Log
@@ -21,3 +21,5 @@ Branch: feat/orange-wheel-1.2. Delivery: single release. Checks: version consist
 - Oval 0.5.3 was independently confirmed published with 12 assets and every release job successful.
 
 - T1 checks: UI regression first failed on stale v0.2; metadata/build and complete UI smoke test then passed at 1.0.0. Baseline normalization complete; rollback is the version metadata/UI import and its tests.
+
+- T2: the palette regression failed on the white wheel, then passed after the orange-glass change. Conversion, keyboard dismissal, settings, pagination and single-format input remain covered. Captures visually inspected. UI version is read directly from package metadata.

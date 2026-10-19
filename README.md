@@ -1,10 +1,10 @@
 <p align="center"><img src="docs/icon.svg" width="84" alt="Square"></p>
 <h1 align="center">Square</h1>
 <p align="center">Un archivo. Otra posibilidad.<br>Un convertidor local, pequeño en la pantalla y directo en lo que hace.<br>Imágenes, audio, video y documentos. Sin cuentas ni archivos en la nube.</p>
-<p align="center"><a href="https://github.com/xXKuroiKenshiXx/Square/releases/tag/v0.2.0"><b>Descargar Square</b></a> · <a href="docs/demo.mp4"><b>Ver el video</b></a> · <a href="#rueda-rápida"><b>Shift + Espacio</b></a></p>
+<p align="center"><a href="https://github.com/xXKuroiKenshiXx/Square/releases/tag/v1.2.0"><b>Descargar Square</b></a> · <a href="docs/demo.mp4"><b>Ver el video</b></a> · <a href="#rueda-rápida"><b>Shift + Espacio</b></a></p>
 <p align="center"><a href="https://github.com/xXKuroiKenshiXx/Square/actions/workflows/build.yml"><img src="https://github.com/xXKuroiKenshiXx/Square/actions/workflows/build.yml/badge.svg" alt="Build"></a> <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-e6ba94?labelColor=252722" alt="GPL 3.0 or later"> <img src="https://img.shields.io/badge/Windows%20%2B%20Linux-local%20by%20design-e6ba94?labelColor=252722" alt="Windows y Linux"></p>
-<p align="center"><a href="docs/demo.mp4"><img src="docs/demo.webp" width="960" alt="Square: selección de formato, conversión local, rueda rápida y configuración del atajo"></a></p>
-<p align="center"><sub><a href="docs/demo.mp4">Video promocional · 35 segundos</a> · Vistas reales de React con archivos de muestra y conversiones reales del motor Rust.<br>El selector de archivos y el enlace con la ventana se preparan para la grabación. No es un benchmark ni una grabación del Explorador. <a href="docs/MEDIA.md">Cómo se grabó</a>.</sub></p>
+<p align="center"><img src="docs/app.png" width="480" alt="Square 1.2.0"><img src="docs/wheel.png" width="320" alt="Rueda rápida naranja de Square 1.2.0"></p>
+<p align="center"><sub><a href="docs/demo.mp4">Demo histórica 0.2 · 35 segundos</a> · Vistas reales de React con archivos de muestra y conversiones reales del motor Rust.<br>El selector de archivos y el enlace con la ventana se preparan para la grabación. No es un benchmark ni una grabación del Explorador. <a href="docs/MEDIA.md">Cómo se grabó</a>.</sub></p>
 
 ## Menos pasos
 
@@ -17,20 +17,20 @@
 
 ## Descargar
 
-Square **0.2 es una versión preliminar**. Binarios x64 sin firma digital. Los motores están incluidos en el ejecutable; por eso el portable es más grande que la interfaz.
+Square **1.2.0**. Binarios x64 sin firma digital. Los motores están incluidos en el ejecutable; por eso el portable es más grande que la interfaz.
 
 | Sistema | Descarga | Uso |
 | --- | --- | --- |
-| Windows 10/11 x64 | [Portable](https://github.com/xXKuroiKenshiXx/Square/releases/download/v0.2.0/Square-0.2.0-portable.zip) | Extraer el ZIP y abrir su único `.exe`; necesita WebView2 instalado. |
-| Windows 10/11 x64 | [Instalador NSIS](https://github.com/xXKuroiKenshiXx/Square/releases/download/v0.2.0/Square_0.2.0_x64-setup.exe) | Instala para tu usuario y puede descargar WebView2 si falta. |
-| Linux x64 | [AppImage](https://github.com/xXKuroiKenshiXx/Square/releases/download/v0.2.0/Square_0.2.0_amd64.AppImage) | Dar permiso de ejecución y abrir. La release local tiene base Ubuntu 24.04. |
-| Fuentes y verificación | [Release completa](https://github.com/xXKuroiKenshiXx/Square/releases/tag/v0.2.0) | Código, fuentes de los motores, versiones y SHA-256 junto a los binarios. |
+| Windows 10/11 x64 | [Portable](https://github.com/xXKuroiKenshiXx/Square/releases/download/v1.2.0/Square-1.2.0-portable.zip) | Extraer el ZIP y abrir su único `.exe`; necesita WebView2 instalado. |
+| Windows 10/11 x64 | [Instalador NSIS](https://github.com/xXKuroiKenshiXx/Square/releases/download/v1.2.0/Square_1.2.0_x64-setup.exe) | Instala para tu usuario y puede descargar WebView2 si falta. |
+| Linux x64 | [AppImage](https://github.com/xXKuroiKenshiXx/Square/releases/download/v1.2.0/Square_1.2.0_amd64.AppImage) | Dar permiso de ejecución y abrir. Compilado sobre Ubuntu 22.04. |
+| Fuentes y verificación | [Release completa](https://github.com/xXKuroiKenshiXx/Square/releases/tag/v1.2.0) | Código, fuentes de los motores, versiones y SHA-256 junto a los binarios. |
 
 ```bash
-chmod +x Square_0.2.0_amd64.AppImage
-./Square_0.2.0_amd64.AppImage
+chmod +x Square_1.2.0_amd64.AppImage
+./Square_1.2.0_amd64.AppImage
 # Si no tenés FUSE:
-./Square_0.2.0_amd64.AppImage --appimage-extract-and-run
+./Square_1.2.0_amd64.AppImage --appimage-extract-and-run
 ```
 
 La apariencia transparente necesita un compositor. La compatibilidad de AppImage depende de las bibliotecas base de la distribución; no se garantiza cualquier Linux. El flujo de CI compila sobre Ubuntu 22.04.

@@ -195,6 +195,19 @@ try {
   await expect(page.getByRole("button", { name: /Convertir a/ })).toHaveCount(
     7,
   );
+  // The quick wheel must use orange glass rather than the old white surface.
+  const wheelPalette = await page.locator(".wheel-base").evaluate((element) => ({
+    fill: getComputedStyle(element).fill,
+    text: getComputedStyle(document.querySelector(".wheel-segment text")).fill,
+    core: getComputedStyle(document.querySelector(".wheel-core")).fill,
+  }));
+  const channels = (value) => value.match(/[\d.]+/g).slice(0, 3).map(Number);
+  const [red, green, blue] = channels(wheelPalette.fill);
+  expect(red).toBeGreaterThan(green + 10);
+  expect(green).toBeGreaterThan(blue);
+  expect(red).toBeLessThan(180);
+  expect(channels(wheelPalette.text)[0]).toBeGreaterThan(200);
+  expect(channels(wheelPalette.core)[0]).toBeLessThan(160);
   await page
     .getByRole("button", { name: "Convertir a WEBP", exact: true })
     .hover();

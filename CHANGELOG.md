@@ -1,5 +1,9 @@
 # Cambios
 
+## 1.2.0 — 2026-10-19
+- Rueda rápida con cristal oscuro, superficies naranja cálido y selección naranja pálido, coherente con la ventana principal.
+- Etiquetas claras y foco de teclado visible; conserva atajo, conversión y paginación.
+
 ## 1.0.0 — 2026-10-19
 - Base de numeración solicitada para Square, conservando las funciones de 0.2.0.
 - Versión completa sincronizada entre interfaz, Tauri, Rust y archivos de dependencias.

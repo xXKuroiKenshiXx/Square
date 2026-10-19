@@ -17,3 +17,6 @@ node scripts/record-demo.mjs
 ```
 
 Requiere los motores preparados y FFmpeg en PATH. Los archivos temporales quedan en `release/demo-recording/`, que está excluido de Git. La grabación abre un servidor de demostración exclusivamente en `127.0.0.1`; no agrega un servidor a la aplicación distribuida.
+
+Las capturas app.png y wheel.png muestran Square 1.2.0 y su rueda naranja. El video y la vista animada se conservan como demostración histórica de 0.2; su rueda clara no representa el diseño actual.
+

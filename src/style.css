@@ -684,7 +684,7 @@ footer i {
   height: 420px;
   position: relative;
   background: transparent;
-  color: #1c2422;
+  color: #f9ece0;
   user-select: none;
 }
 .wheel-ring {
@@ -696,9 +696,9 @@ footer i {
   overflow: visible;
 }
 .wheel-base {
-  fill: #edf0efd9;
+  fill: #503521ed;
   filter: url(#wheel-shadow);
-  stroke: #e1e6e4;
+  stroke: #e8ae7966;
   stroke-width: 1;
 }
 .wheel-segment {
@@ -706,14 +706,14 @@ footer i {
   outline: none;
 }
 .wheel-segment path {
-  fill: url(#wheel-paper);
-  stroke: #d4dcda;
+  fill: url(#wheel-glass);
+  stroke: #edba8e73;
   stroke-width: 1;
   filter: url(#wheel-shadow);
   transition: fill 0.12s;
 }
 .wheel-segment text {
-  fill: #202624;
+  fill: #ffdfba;
   font-size: 15px;
   font-weight: 650;
   stroke: none;
@@ -721,20 +721,24 @@ footer i {
 }
 .wheel-segment.selected path,
 .wheel-segment:focus-visible path {
-  fill: #ff7629;
-  stroke: #ff8a43;
+  fill: #f3b17c;
+  stroke: #ffd9b0;
 }
 .wheel-segment.selected text,
 .wheel-segment:focus-visible text {
-  fill: #fff;
+  fill: #291b12;
 }
 .wheel-segment[aria-disabled="true"] {
   cursor: wait;
 }
+.wheel-segment:focus-visible path {
+  stroke: #ffe1be;
+  stroke-width: 3;
+}
 .wheel-core {
-  fill: #f7f9f8;
-  stroke: #fff;
-  stroke-width: 7;
+  fill: #30231cf2;
+  stroke: #e4aa7666;
+  stroke-width: 2;
   filter: url(#wheel-shadow);
 }
 .wheel-center {
@@ -748,26 +752,26 @@ footer i {
   justify-content: center;
   flex-direction: column;
   pointer-events: none;
-  color: #2e3834;
+  color: #f9ece0;
 }
 .wheel-center small {
   font-size: 8px;
   letter-spacing: 1.5px;
-  color: #7c8881;
+  color: #e5b98e;
   margin-bottom: 8px;
 }
 .wheel-center strong {
   font-size: 24px;
   font-weight: 550;
   line-height: 1.1;
-  color: #29332f;
+  color: #ffe2bf;
 }
 .wheel-page {
   pointer-events: auto;
   border: 0;
   background: transparent;
   font-size: 9px;
-  color: #7d8982;
+  color: #f1cba7;
   margin-top: 10px;
   padding: 3px 10px;
 }
@@ -783,11 +787,11 @@ footer i {
   text-align: center;
   font-size: 10px;
   line-height: 13px;
-  color: #4c5a53;
-  text-shadow: 0 1px 3px #fffffff2;
+  color: #ffe1bf;
+  text-shadow: 0 1px 4px #170c06, 0 0 8px #170c06;
 }
 .wheel-caption.error {
-  color: #9b3b1e;
+  color: #ffc2a6;
 }
 .settings-panel {
   max-height: calc(100vh - 50px);

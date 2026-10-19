@@ -124,13 +124,13 @@ export default function Wheel() {
               dx="0"
               dy="3"
               stdDeviation="5"
-              floodColor="#3a3429"
-              floodOpacity=".09"
+              floodColor="#120b06"
+              floodOpacity=".32"
             />
           </filter>
-          <linearGradient id="wheel-paper" x1="0" y1="0" x2="1" y2="1">
-            <stop stopColor="#fff" stopOpacity=".94" />
-            <stop offset="1" stopColor="#e9eeed" stopOpacity=".92" />
+          <linearGradient id="wheel-glass" x1="0" y1="0" x2="1" y2="1">
+            <stop stopColor="#a36c47" stopOpacity=".94" />
+            <stop offset="1" stopColor="#75482e" stopOpacity=".92" />
           </linearGradient>
         </defs>
         <circle className="wheel-base" cx="210" cy="210" r="190" />
