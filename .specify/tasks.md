@@ -1,5 +1,11 @@
 # /tasks
 
+## Ajuste visual y selección de origen
+- [x] Ocultar el nombre del archivo en la vista principal y los estados de conversión.
+- [x] Añadir desplegable de entrada por categorías con filtros nativos de archivos.
+- [x] Aplicar naranja pálido y superficies de cristal con reflejos suaves.
+- [x] Comprobar ambos menús, cancelación, Escape, clic exterior y ocultación del nombre con la prueba de interfaz.
+
 ## Layout
 - [x] Crear React/Tauri y tema naranja/negro con ventana cuadrada.
 - [x] Dos bloques, menú flotante, selección, estados y controles de ventana.
