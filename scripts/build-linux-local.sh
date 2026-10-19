@@ -14,9 +14,9 @@ curl -fL "https://nodejs.org/dist/latest-v22.x/$NODE_ARCHIVE" -o "/tmp/square-li
 (cd /tmp/square-linux-engines; grep " $NODE_ARCHIVE\$" node-sha.txt | sha256sum -c -)
 tar -xJf "/tmp/square-linux-engines/$NODE_ARCHIVE" -C /tmp/square-linux-engines
 export PATH="/tmp/square-linux-engines/${NODE_ARCHIVE%.tar.xz}/bin:/root/.cargo/bin:$PATH"
-curl -fL https://registry.npmjs.org/@ffmpeg-installer/linux-x64/-/linux-x64-4.1.0.tgz -o /tmp/square-linux-engines/ffmpeg.tar.xz
-tar -xzf /tmp/square-linux-engines/ffmpeg.tar.xz -C /tmp/square-linux-engines
-cp /tmp/square-linux-engines/package/ffmpeg src-tauri/engines/ffmpeg.bin
+curl -fL https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz -o /tmp/square-linux-engines/ffmpeg.tar.xz
+tar -xJf /tmp/square-linux-engines/ffmpeg.tar.xz -C /tmp/square-linux-engines
+cp /tmp/square-linux-engines/ffmpeg-*-linux64-gpl/bin/ffmpeg src-tauri/engines/ffmpeg.bin
 PANDOC_URL=https://github.com/jgm/pandoc/releases/download/3.12.1/pandoc-3.12.1-linux-amd64.tar.gz
 curl -fL "$PANDOC_URL" -o /tmp/square-linux-engines/pandoc.tar.gz
 tar -xzf /tmp/square-linux-engines/pandoc.tar.gz -C /tmp/square-linux-engines

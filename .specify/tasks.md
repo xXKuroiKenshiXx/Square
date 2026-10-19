@@ -15,5 +15,5 @@
 - [x] Configurar NSIS, portable Windows y CI AppImage.
 - [x] Compilar Windows y ejecutar cinco pruebas de Rust en Windows y Linux.
 - [x] Copiar portable terminado al Escritorio.
-- [ ] Ejecutar job AppImage en Linux.
+- [x] Compilar AppImage local en Ubuntu 24.04 y verificar arranque durante 20 segundos.
 - [x] Publicar repositorio privado en GitHub.
