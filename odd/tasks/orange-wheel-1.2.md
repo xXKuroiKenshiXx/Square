@@ -11,7 +11,7 @@ Branch: feat/orange-wheel-1.2. Delivery: single release. Checks: version consist
 ## Tasks
 - T1 [S1,S2] inline — complete: restored, all version metadata and visible UI at 1.0.0; source tag v1.0.0 at 3600787. Risk: item 5 (release metadata).
 - T2 [S4] inline — complete: orange/dark glass wheel; build and complete UI regression passed. Risk: none (visual styling).
-- T3 [S3] inline + independent verifier — 1.2.0 packages, release links and Desktop portable pending. Risk: item 5 (release).
+- T3 [S3] inline + independent verifier — complete: published 1.2.0 packages and verified release links; Desktop portable and installer updated and startup passed. Risk: item 5 (release).
 
 ## Log
 - L1: User request: "mira pone el proyecto otra vez en el escritorio de square b.com/xXKuroiKenshiXx/Square luego agarra y el repo pone bien la version ponele como 1.0 y luego agarra y crea una neuva version que sea 1.2 o algo asi y modificale la rueda y rapida esa que ayuuda a configurar rapido de color naranja y no blanca osea que tenga la misma estetica del programa"
@@ -25,3 +25,7 @@ Branch: feat/orange-wheel-1.2. Delivery: single release. Checks: version consist
 - T2: the palette regression failed on the white wheel, then passed after the orange-glass change. Conversion, keyboard dismissal, settings, pagination and single-format input remain covered. Captures visually inspected. UI version is read directly from package metadata.
 
 - Independent verification at a345bbc passed S1, S2 and S4; S3 remains pending native packages. Scratch: square-verify-BxqsBv in system temp. Native conversion backend unchanged. Engine provenance helper verified against real FFmpeg/Pandoc binaries; manifests travel with CI artifacts.
+
+- T3 complete: native build 39249916038 passed on Windows and Ubuntu; release publisher 39251467625 verified all ten uploaded SHA-256 digests before publication. Tag v1.2.0 points to 4637d93fd73279e250681e30d23a6b4e46f25d8c. Independent release verification passed S3.
+- Desktop delivery: Square-Portable.exe and Square-Setup.exe both report 1.2.0. Portable startup reached InputIdle and remained responding. Linux AppImage packaging passed CI; a separate 1.2.0 Linux runtime smoke test was not performed.
+- Final documentation records current evidence; historical 0.2.0 promotional media remains explicitly labelled. Engram mirror remains unavailable.

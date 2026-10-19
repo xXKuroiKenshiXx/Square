@@ -1,3 +1,23 @@
+# Square 1.2.0 verification
+
+Square 1.2.0 is published with the orange glass wheel, Windows portable and installer, and Linux AppImage. The 1.0.0 tag records the synchronized source baseline only.
+
+## Observed checks
+
+- Version consistency, TypeScript/Vite build and complete UI smoke tests passed.
+- Independent verification passed the palette, keyboard access, version and release checks.
+- Native [build 39249916038](https://github.com/xXKuroiKenshiXx/Square/actions/runs/39249916038) passed for Windows and Ubuntu 22.04 at tag commit `4637d93fd73279e250681e30d23a6b4e46f25d8c`.
+- [Publisher 39251467625](https://github.com/xXKuroiKenshiXx/Square/actions/runs/39251467625) verified all ten uploaded asset digests before publishing.
+- Desktop Windows portable and installer report version 1.2.0. The portable reached InputIdle and remained responsive during startup verification.
+- A separate Linux 1.2.0 runtime smoke test was not performed; Linux packaging passed CI.
+
+## Download and evidence
+
+[Square 1.2.0 release](https://github.com/xXKuroiKenshiXx/Square/releases/tag/v1.2.0) contains the packages, SHA256SUMS.txt, per-platform engine manifests, SOURCES.md and corresponding engine source archives.
+
+UI smoke tests use simulated IPC. They do not prove selection retrieval in every file manager. Historical promotional media below describes 0.2.0.
+
+---
 # Verificación de Square 0.2.0
 
 ## Verificado localmente
