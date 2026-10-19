@@ -4,6 +4,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/plugin-dialog";
 import "./style.css";
+
 type Info = {
   path: string;
   name: string;
@@ -11,17 +12,101 @@ type Info = {
   bytes: number;
   targets: string[];
 };
+type Menu = "input" | "output" | null;
+const groups = [
+  {
+    name: "Imágenes",
+    formats: [
+      "png",
+      "jpg",
+      "webp",
+      "svg",
+      "heic",
+      "avif",
+      "gif",
+      "bmp",
+      "tiff",
+      "ico",
+      "pnm",
+      "tga",
+      "dds",
+      "qoi",
+    ],
+  },
+  {
+    name: "Video",
+    formats: [
+      "mp4",
+      "mkv",
+      "mov",
+      "webm",
+      "avi",
+      "mpeg",
+      "m4v",
+      "wmv",
+      "ts",
+      "flv",
+    ],
+  },
+  {
+    name: "Audio",
+    formats: ["mp3", "wav", "aac", "flac", "ogg", "wma", "m4a", "opus", "aiff"],
+  },
+  {
+    name: "Documentos",
+    formats: [
+      "pdf",
+      "docx",
+      "md",
+      "html",
+      "txt",
+      "odt",
+      "rtf",
+      "epub",
+      "rst",
+      "tex",
+    ],
+  },
+];
+const aliases: Record<string, string[]> = {
+  jpg: ["jpg", "jpeg"],
+  tiff: ["tiff", "tif"],
+  heic: ["heic", "heif"],
+  md: ["md", "markdown"],
+  html: ["html", "htm"],
+  tex: ["tex", "latex"],
+};
+function Chevron() {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path d="m4 6 4 4 4-4" />
+    </svg>
+  );
+}
+function Arrow() {
+  return (
+    <svg viewBox="0 0 28 28" aria-hidden="true">
+      <path d="M5 9h18m-5-5 5 5-5 5M23 19H5m5-5-5 5 5 5" />
+    </svg>
+  );
+}
+
 function App() {
-  const [file, setFile] = useState<Info | null>(null),
-    [target, setTarget] = useState(""),
-    [menu, setMenu] = useState(false),
-    [busy, setBusy] = useState(false),
-    [drag, setDrag] = useState(false),
-    [status, setStatus] = useState(""),
-    [done, setDone] = useState(false);
+  const [file, setFile] = useState<Info | null>(null);
+  const [target, setTarget] = useState("");
+  const [menu, setMenu] = useState<Menu>(null);
+  const [busy, setBusy] = useState(false);
+  const [drag, setDrag] = useState(false);
+  const [status, setStatus] = useState("");
+  const [done, setDone] = useState(false);
   const busyRef = useRef(false);
+  const converterRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLButtonElement>(null);
+  const outputRef = useRef<HTMLButtonElement>(null);
+
   async function load(path: string) {
     if (busyRef.current) return;
+    setMenu(null);
     try {
       const f = await invoke<Info>("inspect", { path });
       setFile(f);
@@ -32,8 +117,8 @@ function App() {
           : "Este formato todavía no tiene conversiones disponibles.",
       );
       setDone(false);
-    } catch (e) {
-      setStatus(String(e));
+    } catch {
+      setStatus("No se pudo abrir el archivo. Probá seleccionarlo de nuevo.");
     }
   }
   useEffect(() => {
@@ -58,24 +143,71 @@ function App() {
       dispose?.();
     };
   }, []);
-  async function choose() {
-    if (busy) return;
-    const p = await open({ multiple: false, directory: false });
-    if (typeof p === "string") void load(p);
+  useEffect(() => {
+    if (!menu) return;
+    function outside(e: PointerEvent) {
+      if (!converterRef.current?.contains(e.target as Node)) setMenu(null);
+    }
+    function keyboard(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setMenu(null);
+        (menu === "input" ? inputRef : outputRef).current?.focus();
+      }
+    }
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", keyboard);
+    return () => {
+      document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("keydown", keyboard);
+    };
+  }, [menu]);
+
+  async function choose(format?: string) {
+    if (busyRef.current) return;
+    setMenu(null);
+    try {
+      const p = await open({
+        multiple: false,
+        directory: false,
+        ...(format
+          ? {
+              filters: [
+                {
+                  name: format.toUpperCase(),
+                  extensions: aliases[format] || [format],
+                },
+              ],
+            }
+          : {}),
+      });
+      if (typeof p === "string") await load(p);
+    } catch {
+      setStatus("No se pudo abrir el selector de archivos.");
+    }
   }
   async function convert() {
-    if (!file || !target || busy) return;
+    if (!file || !target || busyRef.current) return;
     setBusy(true);
     busyRef.current = true;
     setDone(false);
-    setMenu(false);
-    setStatus("Procesando localmente…");
+    setMenu(null);
+    setStatus("Procesando en tu dispositivo…");
     try {
-      const p = await invoke<string>("convert", { path: file.path, target });
+      await invoke<string>("convert", { path: file.path, target });
       setDone(true);
-      setStatus(`Guardado en ${p}`);
+      setStatus("Listo. Guardado junto al archivo original.");
     } catch (e) {
-      setStatus(String(e));
+      // A converter diagnostic can contain the full source path. Keep filenames out of the interface.
+      const message = String(e);
+      setStatus(
+        message.includes("no compatible")
+          ? "Esta conversión no está disponible."
+          : message.includes("OCR")
+            ? "Este PDF necesita OCR para extraer su texto."
+            : message.includes("escribir")
+              ? "No se puede guardar en la carpeta del archivo original."
+              : "No se pudo convertir. Revisá que el archivo y el formato sean compatibles.",
+      );
     } finally {
       setBusy(false);
       busyRef.current = false;
@@ -83,10 +215,12 @@ function App() {
   }
   return (
     <main className={drag ? "shell dragging" : "shell"}>
+      <div className="ambient ambient-one" aria-hidden="true" />
+      <div className="ambient ambient-two" aria-hidden="true" />
       <header>
         <div className="brand">
-          <i />
-          square<span> / convertidor local</span>
+          <i aria-hidden="true" />
+          square<span>LOCAL CONVERTER</span>
         </div>
         <div className="controls">
           <button
@@ -105,57 +239,111 @@ function App() {
       </header>
       <div className="dragbar" data-tauri-drag-region />
       <section>
-        <p className="eyebrow">MENOS PASOS. MÁS POSIBILIDADES.</p>
+        <p className="eyebrow">
+          <span /> SIMPLE POR NATURALEZA
+        </p>
         <h1>
-          Cambiá el formato.
+          Un archivo.
           <br />
-          <em>Conservá lo esencial.</em>
+          <em>Otra posibilidad.</em>
         </h1>
-        <div className="converter">
-          <button className="tile input" disabled={busy} onClick={choose}>
-            <span className="label">
-              ORIGEN <b>↗</b>
-            </span>
-            <strong>{file?.ext.toUpperCase() || "＋"}</strong>
-            <span className="hint">
-              {file ? "Cambiar archivo" : "Soltá tu archivo"}
-            </span>
-          </button>
-          <span className={"arrow " + (busy ? "spin" : "")}>⇄</span>
-          <div className="output-wrap">
+        <div className="converter" ref={converterRef}>
+          <div className="format-wrap">
             <button
-              className="tile output"
-              disabled={!file || busy || !file.targets.length}
-              aria-expanded={menu}
-              onClick={() => setMenu(!menu)}
+              ref={inputRef}
+              className="tile input"
+              disabled={busy}
+              aria-haspopup="dialog"
+              aria-expanded={menu === "input"}
+              aria-controls="input-formats"
+              onClick={() => setMenu(menu === "input" ? null : "input")}
             >
               <span className="label">
-                DESTINO <b>⌄</b>
+                ORIGEN <Chevron />
               </span>
-              <strong>{target.toUpperCase() || "?"}</strong>
+              <strong>{file?.ext.toUpperCase() || "IN"}</strong>
+              <span className="hint">
+                {file ? "Cambiar formato de entrada" : "Elegí un formato"}
+              </span>
+            </button>
+            {menu === "input" && (
+              <div
+                id="input-formats"
+                className="formats input-menu"
+                role="dialog"
+                aria-label="Formato de entrada"
+              >
+                <div className="menu-heading">Formato de entrada</div>
+                <button className="browse-any" onClick={() => void choose()}>
+                  Seleccionar cualquier archivo <span>↗</span>
+                </button>
+                <div className="menu-scroll">
+                  {groups.map((group) => (
+                    <div className="format-group" key={group.name}>
+                      <p>{group.name}</p>
+                      <div className="format-grid">
+                        {group.formats.map((format) => (
+                          <button
+                            key={format}
+                            onClick={() => void choose(format)}
+                          >
+                            {format.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <span className={"arrow " + (busy ? "spin" : "")}>
+            <Arrow />
+          </span>
+          <div className="format-wrap">
+            <button
+              ref={outputRef}
+              className="tile output"
+              disabled={!file || busy || !file.targets.length}
+              aria-haspopup="dialog"
+              aria-expanded={menu === "output"}
+              aria-controls="output-formats"
+              onClick={() => setMenu(menu === "output" ? null : "output")}
+            >
+              <span className="label">
+                DESTINO <Chevron />
+              </span>
+              <strong>{target.toUpperCase() || "OUT"}</strong>
               <span className="hint">Elegí un formato</span>
             </button>
-            {menu && (
+            {menu === "output" && (
               <div
-                className="formats"
-                role="listbox"
+                id="output-formats"
+                className="formats output-menu"
+                role="dialog"
                 aria-label="Formato de destino"
               >
-                {file?.targets.map((t) => (
-                  <button
-                    key={t}
-                    role="option"
-                    aria-selected={t === target}
-                    onClick={() => {
-                      setTarget(t);
-                      setMenu(false);
-                      setDone(false);
-                      setStatus("");
-                    }}
-                  >
-                    {t.toUpperCase()} {t === target ? "✓" : ""}
-                  </button>
-                ))}
+                <div className="menu-heading">Convertir a</div>
+                <div className="menu-scroll">
+                  <div className="format-grid">
+                    {file?.targets.map((t) => (
+                      <button
+                        key={t}
+                        aria-pressed={t === target}
+                        onClick={() => {
+                          setTarget(t);
+                          setMenu(null);
+                          setDone(false);
+                          setStatus("");
+                          outputRef.current?.focus();
+                        }}
+                      >
+                        {t.toUpperCase()}
+                        <span>{t === target ? "✓" : ""}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -163,12 +351,21 @@ function App() {
         <div className="fileline">
           {file ? (
             <>
-              <span className="file-icon">▤</span>
-              <span title={file.path}>{file.name}</span>
+              <span className="file-dot" />
+              <span>Archivo {file.ext.toUpperCase()} listo</span>
               <small>{(file.bytes / 1048576).toFixed(2)} MB</small>
+              <button
+                disabled={busy}
+                onClick={() => void choose()}
+                aria-label="Cambiar archivo"
+              >
+                Cambiar <span>↗</span>
+              </button>
             </>
           ) : (
-            <span>Arrastrá un archivo o tocá el bloque de origen</span>
+            <button className="choose-inline" onClick={() => void choose()}>
+              Arrastrá tu archivo o <span>seleccionalo acá ↗</span>
+            </button>
           )}
         </div>
         <button
@@ -184,7 +381,7 @@ function App() {
           <span>{busy ? "◌" : "↗"}</span>
         </button>
         <p role="status" className={"status " + (done ? "success" : "")}>
-          {status || "El resultado se guarda junto al archivo original."}
+          {status || "Se guarda en la misma carpeta. Así de simple."}
         </p>
       </section>
       <footer>
@@ -192,7 +389,7 @@ function App() {
           <i />
           100% LOCAL
         </span>
-        <span>Sin nube. Sin vueltas.</span>
+        <span>Tus archivos se quedan con vos.</span>
         <span>v0.1</span>
       </footer>
       {drag && (

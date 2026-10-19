@@ -2,6 +2,13 @@
 
 Convertidor local de archivos. Tauri 2 + Rust + React + Tailwind. Ventana cuadrada naranja/negra. Arrastrá un archivo, elegí destino y convertí. Resultados en el directorio original, nunca sobrescribiendo.
 
+La interfaz usa naranja pálido y paneles de cristal con reflejos suaves. Ambos bloques tienen desplegables: origen abre un selector filtrado por el formato elegido; destino muestra las conversiones disponibles para el archivo detectado. También se puede arrastrar el archivo o seleccionarlo sin filtro. La vista principal muestra solo formato y tamaño, sin exponer nombres o rutas en mensajes de estado.
+
+![Square](release-preview.png)
+
+### Verificar la interfaz
+Con `npm run dev` activo, ejecutar `npx playwright install chromium` una vez y después `npm run test:ui`. La prueba usa comandos y diálogos nativos simulados y verifica los menús, filtros, cancelación, Escape, clic exterior y ocultación del nombre. Las conversiones reales se verifican con las pruebas Rust.
+
 ## Desarrollo
 Necesita Node 22, Rust estable, herramientas C++ de Windows y WebView2. En Linux: WebKitGTK 4.1, appindicator y librsvg. Preparar FFmpeg y Pandoc en PATH; ejecutar `scripts/prepare-engines.ps1` en Windows o `bash scripts/prepare-engines.sh` en Linux. Luego `npm ci` y `npm run tauri dev`.
 
