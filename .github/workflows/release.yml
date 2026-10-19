@@ -1,0 +1,115 @@
+name: Publish verified release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version tag to publish
+        required: true
+      build_run:
+        description: Successful Build Square run for that tag's commit
+        required: true
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SQUARE_TAG: ${{ inputs.tag }}
+      SQUARE_BUILD: ${{ inputs.build_run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify build identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SQUARE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$SQUARE_BUILD" =~ ^[0-9]+$ ]]
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SQUARE_BUILD" --jq .conclusion)" = success
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SQUARE_BUILD" --jq .name)" = 'Build Square'
+          test "$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SQUARE_BUILD" --jq .head_sha)" = "$(git rev-parse "$SQUARE_TAG^{commit}")"
+          test "$(python -c 'import json; print(json.load(open("package.json"))["version"])')" = "${SQUARE_TAG#v}"
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.build_run }}
+          path: incoming
+      - name: Assemble packages and upstream sources
+        shell: bash
+        run: |
+          python <<'PY'
+          import hashlib, json, os, re, shutil, tarfile, urllib.request, zipfile
+          from pathlib import Path
+          version = os.environ['SQUARE_TAG'][1:]
+          root, output = Path('incoming'), Path('dist')
+          output.mkdir()
+          def unique(name):
+              matches = list(root.rglob(name))
+              assert len(matches) == 1, f'Expected exactly one {name}'
+              return matches[0]
+          executable = unique('square.exe')
+          with zipfile.ZipFile(output / f'Square-{version}-portable.zip', 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+              archive.write(executable, 'Square.exe')
+          for name in [f'Square_{version}_x64-setup.exe', f'Square_{version}_amd64.AppImage']:
+              shutil.copy2(unique(name), output / name)
+          source_lines = [f'# Square {version} engine sources', '', 'The manifests record the actual embedded binaries and their full version/configuration output.', 'Preparation recipes are scripts/prepare-engines.ps1 and scripts/prepare-engines.sh in the source tag.', 'Windows providers: Chocolatey FFmpeg/Pandoc. Linux providers: yt-dlp/FFmpeg-Builds and jgm/pandoc.', 'Linked library options appear in each FFmpeg manifest; provider build recipes document their sources.', '']
+          for platform in ['win32', 'linux']:
+              manifest = unique(f'engine-manifest-{platform}.json')
+              data = json.loads(manifest.read_text())
+              assert data['square'] == version and data['platform'] == platform
+              shutil.copy2(manifest, output / manifest.name)
+              for name, engine in data['engines'].items():
+                  assert name in ['ffmpeg', 'pandoc']
+                  assert re.fullmatch(r'[a-f0-9]{64}', engine['sha256']) and engine['bytes'] > 1_000_000
+                  ref = engine['sourceRef']
+                  assert re.fullmatch(r'[A-Za-z0-9_.-]+', ref)
+                  repository = 'FFmpeg/FFmpeg' if name == 'ffmpeg' else 'jgm/pandoc'
+                  url = f'https://github.com/{repository}/archive/{ref}.tar.gz'
+                  assert engine['sourceArchive'] == url
+                  target = output / f'{name}-{ref}-source.tar.gz'
+                  if not target.exists():
+                      with urllib.request.urlopen(url, timeout=120) as response, target.open('wb') as file:
+                          shutil.copyfileobj(response, file)
+                      with tarfile.open(target, 'r:gz') as archive:
+                          assert archive.getmembers(), 'Empty source archive'
+                  source_lines.append(f'- {platform}: {engine["version"]} — {target.name} — {url}')
+          (output / 'SOURCES.md').write_text('\n'.join(source_lines) + '\n')
+          checksums = [f'{hashlib.sha256(file.read_bytes()).hexdigest()}  {file.name}' for file in sorted(output.iterdir())]
+          (output / 'SHA256SUMS.txt').write_text('\n'.join(checksums) + '\n')
+          changelog = Path('CHANGELOG.md').read_text().split(f'## {version} —', 1)[1].split('\n', 1)[1].split('\n## ', 1)[0].strip()
+          Path('release-notes.md').write_text(changelog + '\n\nWindows: portable ZIP e instalador. Linux: AppImage x64. Motores locales incluidos; hashes y fuentes adjuntos. WebView2 requerido en Windows; binarios sin firma.\n')
+          PY
+      - name: Upload draft and verify every digest before publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$SQUARE_TAG" --json isDraft > "$RUNNER_TEMP/existing.json" 2>/dev/null; then
+            test "$(jq -r .isDraft "$RUNNER_TEMP/existing.json")" = true
+          else
+            gh release create "$SQUARE_TAG" --draft --title "Square ${SQUARE_TAG#v} — Rueda naranja" --notes-file release-notes.md
+          fi
+          gh release upload "$SQUARE_TAG" dist/* --clobber
+          gh api "repos/$GITHUB_REPOSITORY/releases" > "$RUNNER_TEMP/releases.json"
+          python <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          releases = json.loads(Path(os.environ['RUNNER_TEMP'], 'releases.json').read_text())
+          release = next(item for item in releases if item['tag_name'] == os.environ['SQUARE_TAG'])
+          assets = {item['name']: item for item in release['assets']}
+          files = list(Path('dist').iterdir())
+          assert set(assets) == {file.name for file in files}
+          for file in files:
+              asset = assets[file.name]
+              assert asset['state'] == 'uploaded' and asset['size'] == file.stat().st_size
+              assert asset['digest'] == 'sha256:' + hashlib.sha256(file.read_bytes()).hexdigest()
+          print(f'PASS: all {len(files)} uploaded files match their local SHA-256 digests.')
+          PY
+          gh release edit "$SQUARE_TAG" --draft=false --latest
