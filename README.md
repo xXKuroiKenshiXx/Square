@@ -21,7 +21,7 @@ Square **0.2 es una versión preliminar**. Binarios x64 sin firma digital. Los m
 
 | Sistema | Descarga | Uso |
 | --- | --- | --- |
-| Windows 10/11 x64 | [Portable](https://github.com/xXKuroiKenshiXx/Square/releases/download/v0.2.0/Square-0.2.0-portable.exe) | Abrir el `.exe`; necesita WebView2 instalado. |
+| Windows 10/11 x64 | [Portable](https://github.com/xXKuroiKenshiXx/Square/releases/download/v0.2.0/Square-0.2.0-portable.zip) | Extraer el ZIP y abrir su único `.exe`; necesita WebView2 instalado. |
 | Windows 10/11 x64 | [Instalador NSIS](https://github.com/xXKuroiKenshiXx/Square/releases/download/v0.2.0/Square_0.2.0_x64-setup.exe) | Instala para tu usuario y puede descargar WebView2 si falta. |
 | Linux x64 | [AppImage](https://github.com/xXKuroiKenshiXx/Square/releases/download/v0.2.0/Square_0.2.0_amd64.AppImage) | Dar permiso de ejecución y abrir. La release local tiene base Ubuntu 24.04. |
 | Fuentes y verificación | [Release completa](https://github.com/xXKuroiKenshiXx/Square/releases/tag/v0.2.0) | Código, fuentes de los motores, versiones y SHA-256 junto a los binarios. |
