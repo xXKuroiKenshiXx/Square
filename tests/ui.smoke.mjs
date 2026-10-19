@@ -1,5 +1,6 @@
 import { chromium, expect } from "@playwright/test";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
+const appVersion = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8")).version;
 
 // UI integration test: dialogs and native commands are mocked; conversions are covered by Rust.
 const browser = await chromium.launch();
@@ -93,6 +94,7 @@ try {
     };
   });
   await page.goto(process.env.SQUARE_URL || "http://127.0.0.1:1420");
+  await expect(page.getByText(`v${appVersion}`, { exact: true })).toBeVisible();
   await mkdir("release", { recursive: true });
   await page.screenshot({ path: "release/ui-empty.png" });
   const input = page.getByRole("button", { name: /ORIGEN/ });

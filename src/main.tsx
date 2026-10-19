@@ -7,6 +7,7 @@ import { listen } from "@tauri-apps/api/event";
 import Settings, { shortcutLabel } from "./Settings";
 import Wheel from "./Wheel";
 import type { QuickSettings } from "./types";
+import { version as appVersion } from "../package.json";
 import "./style.css";
 
 type Info = {
@@ -462,7 +463,7 @@ function App() {
         >
           {shortcutLabel(shortcut)} · Rueda rápida
         </button>
-        <span>v0.2</span>
+        <span>v{appVersion}</span>
       </footer>
       {drag && (
         <div className="drop-overlay">

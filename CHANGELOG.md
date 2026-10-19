@@ -1,5 +1,10 @@
 # Cambios
 
+## 1.0.0 — 2026-10-19
+- Base de numeración solicitada para Square, conservando las funciones de 0.2.0.
+- Versión completa sincronizada entre interfaz, Tauri, Rust y archivos de dependencias.
+- Etiqueta de código fuente; los siguientes paquetes descargables corresponden a 1.2.0.
+
 ## 0.2.0 — 2026-10-19
 - Rueda flotante de conversión junto al cursor, con selección de destinos y páginas adicionales.
 - Atajo global Shift + Espacio, configurable y persistente.
