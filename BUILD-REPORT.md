@@ -4,6 +4,7 @@
 - TypeScript y Vite: compilación correcta.
 - Windows: ocho pruebas Rust correctas; conversiones reales, nombres sin sobrescribir, SVG, ICO, preferencias, validación del atajo y rechazo de ventana inválida.
 - Linux: siete pruebas Rust correctas, con conversiones reales y preferencias.
+- Arranque Linux: AppImage final permaneció activo durante 20 segundos bajo Xvfb/DBus en Ubuntu 24.04.
 - Arranque Windows: ejecutable 0.2 iniciado, responde y alcanza InputIdle.
 - Interfaz: ambos menús, cancelación, ocultación del nombre, captura y guardado de combinación, rueda, Escape y paginación.
 - Demo: dos conversiones ejecutadas por el motor Rust, con hashes en `docs/demo-manifest.json`.
