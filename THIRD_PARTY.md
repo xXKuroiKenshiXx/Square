@@ -6,5 +6,6 @@
 - React: MIT, https://github.com/facebook/react .
 - image: MIT/Apache-2.0, https://github.com/image-rs/image .
 - pdf-extract: MIT, https://github.com/jrmuizel/pdf-extract .
+- resvg: MPL-2.0, https://github.com/linebender/resvg .
 
 Los motores descargados no se incluyen en Git. La compilación usa las versiones presentes al preparar engines; para releases auditables registrar hashes/versiones y archivar las fuentes correspondientes antes de publicación pública.

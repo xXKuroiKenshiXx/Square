@@ -116,6 +116,9 @@ fn engine(name: &str) -> Result<PathBuf, String> {
 }
 fn run(name: &str, args: &[String]) -> Result<(), String> {
     let mut cmd = Command::new(engine(name)?);
+    if name == "ffmpeg" {
+        cmd.args(["-protocol_whitelist", "file,pipe,data,crypto"]);
+    }
     cmd.args(args);
     #[cfg(windows)]
     {
@@ -207,8 +210,10 @@ fn convert_sync(path: String, target: String) -> Result<String, String> {
         } else {
             let img = if ext == "svg" {
                 let bytes = fs::read(&p).map_err(|e| e.to_string())?;
-                let tree = resvg::usvg::Tree::from_data(&bytes, &resvg::usvg::Options::default())
-                    .map_err(|e| e.to_string())?;
+                let mut options = resvg::usvg::Options::default();
+                options.fontdb_mut().load_system_fonts();
+                let tree =
+                    resvg::usvg::Tree::from_data(&bytes, &options).map_err(|e| e.to_string())?;
                 let size = tree.size().to_int_size();
                 if u64::from(size.width()) * u64::from(size.height()) > 100_000_000 {
                     return Err("SVG demasiado grande para rasterizar.".into());
@@ -230,7 +235,12 @@ fn convert_sync(path: String, target: String) -> Result<String, String> {
                     .decode()
                     .map_err(|e| e.to_string())?
             };
-            if target == "jpg" {
+            if target == "ico" {
+                img.thumbnail(256, 256)
+                    .to_rgba8()
+                    .save(&out)
+                    .map_err(|e| e.to_string())?
+            } else if target == "jpg" {
                 img.to_rgb8().save(&out).map_err(|e| e.to_string())?
             } else {
                 img.save(&out).map_err(|e| e.to_string())?
@@ -341,6 +351,15 @@ mod tests {
         assert_ne!(first, second);
         assert!(p.exists());
         assert_eq!(image::open(first).unwrap().width(), 2);
+    }
+    #[test]
+    fn large_image_to_icon() {
+        let dir = tempfile::tempdir().unwrap();
+        let p = dir.path().join("large.png");
+        image::RgbImage::new(1000, 500).save(&p).unwrap();
+        let result = convert_sync(p.to_string_lossy().into(), "ico".into()).unwrap();
+        let icon = image::open(result).unwrap();
+        assert_eq!((icon.width(), icon.height()), (256, 128));
     }
     #[test]
     fn embedded_engines_and_real_conversions() {

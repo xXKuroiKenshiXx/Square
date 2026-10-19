@@ -13,7 +13,7 @@
 - [ ] OCR, XLSX y PDF a DOCX fiel (ampliaciones futuras).
 ## Distribución y validación
 - [x] Configurar NSIS, portable Windows y CI AppImage.
-- [x] Compilar Windows y ejecutar cuatro pruebas de Rust en Windows y Linux.
+- [x] Compilar Windows y ejecutar cinco pruebas de Rust en Windows y Linux.
 - [x] Copiar portable terminado al Escritorio.
 - [ ] Ejecutar job AppImage en Linux.
-- [ ] Publicar repositorio remoto cuando haya autenticación válida.
+- [x] Publicar repositorio privado en GitHub.

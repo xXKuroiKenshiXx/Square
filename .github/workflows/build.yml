@@ -1,5 +1,8 @@
 name: Build Square
 on: [push, workflow_dispatch]
+concurrency:
+  group: square-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   desktop:
     strategy:
